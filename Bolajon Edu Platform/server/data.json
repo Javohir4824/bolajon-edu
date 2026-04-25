@@ -1,0 +1,79 @@
+{
+  "logs": [],
+  "resources": [
+    {
+      "month": "Sentyabr",
+      "week": "1-hafta",
+      "theme": "O‘zbekiston mening Vatanim",
+      "center": "Qurish-yasash va matematika",
+      "group": "Katta",
+      "videoUrl": "http://localhost:5000/uploads/1777118382400-1775691406_IMG_2097.mp4",
+      "audioUrl": "http://localhost:5000/uploads/1777118384627-Artem Smile - Ð¦Ñ‹Ð³Ð°Ð½ÐºÐ° Ð½Ð°Ð³Ð°Ð´Ð°Ð»Ð°.mp3",
+      "images": [
+        "http://localhost:5000/uploads/1777118386647-Modern promotional banner design for Fargâ€˜ona viloyati Yoshlar ishlari boshqarmasi rasmiy axborot m_1776778989287.png"
+      ],
+      "slidesUrl": "",
+      "id": 1777118392121,
+      "createdAt": "25.04.2026, 16:59:52"
+    }
+  ],
+  "homeworks": [
+    {
+      "id": 1777153614204,
+      "studentName": "umarov jasurbek umar",
+      "viloyat": "Fargʻona viloyati",
+      "tuman": "Quva tumani",
+      "dmtt": "1",
+      "group": "1-Katta",
+      "month": "Sentyabr",
+      "theme": "Oʻzbekiston mening Vatanim",
+      "center": "Qurish-yasash va matematika",
+      "fileUrl": "http://localhost:5000/uploads/1777153614177-Modern promotional banner design for Fargâona viloyati Yoshlar ishlari boshqarmasi rasmiy axborot m_1776778989287.png",
+      "time": "26.04.2026, 02:46:54"
+    }
+  ],
+  "teachers": [
+    {
+      "username": "yunka",
+      "password": "1012",
+      "group": "1-Katta",
+      "viloyat": "Fargʻona viloyati",
+      "tuman": "Quva tumani",
+      "dmtt": "1",
+      "id": 1777141588521
+    }
+  ],
+  "events": [],
+  "directors": [
+    {
+      "username": "yuma",
+      "password": "1012",
+      "viloyat": "Fargʻona viloyati",
+      "tuman": "Quva tumani",
+      "dmtt": "1",
+      "id": 1777137692596
+    }
+  ],
+  "students": [
+    {
+      "id": 1777153594040,
+      "username": "jasurbek",
+      "password": "1012",
+      "name": "umarov jasurbek umar",
+      "viloyat": "Fargʻona viloyati",
+      "tuman": "Quva tumani",
+      "dmtt": "1",
+      "group": "1-Katta",
+      "points": 5,
+      "history": [
+        {
+          "amount": 5,
+          "reason": "alo",
+          "teacherName": "yunka",
+          "time": "26.04.2026, 02:47:52"
+        }
+      ],
+      "createdAt": "26.04.2026, 02:46:34"
+    }
+  ]
+}
