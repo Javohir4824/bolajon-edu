@@ -105,12 +105,13 @@ export default function Landing() {
              y: { repeat: Infinity, duration: 3, ease: "easeInOut" },
              rotate: { repeat: Infinity, duration: 10, ease: "linear" }
            }}
+           className="landing-icon"
            style={{ fontSize: '4rem', marginBottom: '20px', display: 'inline-block' }}
         >
           {mode === 'login' ? '🔑' : (regStep === 1 ? '☀️' : '🚀')}
         </motion.div>
 
-        <h1 style={{ color: 'var(--primary)', fontSize: '2.2rem', marginBottom: '8px' }}>
+        <h1 className="landing-title" style={{ color: 'var(--primary)', fontSize: '2.2rem', marginBottom: '8px' }}>
           {mode === 'login' ? 'Salom bolajon!' : (regStep === 1 ? 'Salom bolajon!' : 'Roʻyxatdan oʻtish')}
         </h1>
         <p style={{ color: '#666', marginBottom: '30px' }}>

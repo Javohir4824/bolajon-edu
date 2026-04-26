@@ -200,8 +200,25 @@ input:focus, select:focus {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
   margin: 24px auto 0 auto;
-  max-width: 1000px; /* Constrain max width so it neatly forms a 3x3 array */
+  max-width: 1000px;
   width: 100%;
+}
+
+@media (max-width: 600px) {
+  .grid-cards {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .month-card, .lesson-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  .month-card h2, .lesson-card h2 {
+    font-size: 1.1rem;
+  }
+  .month-card .icon, .lesson-card .icon {
+    font-size: 2rem !important;
+  }
 }
 
 .month-card, .lesson-card {
@@ -234,6 +251,25 @@ input:focus, select:focus {
   max-width: 1100px;
   margin: 0 auto;
   width: 100%;
+}
+
+@media (max-width: 600px) {
+  .sections-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .section-item {
+    padding: 16px;
+    gap: 8px;
+  }
+  .section-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+  .section-item h3 {
+    font-size: 0.9rem;
+  }
 }
 
 .section-item {
@@ -437,22 +473,25 @@ input:focus, select:focus {
     top: -9999px;
     left: -9999px;
   }
-  tr { border: 1px solid #ccc; margin-bottom: 20px; border-radius: 8px; background: white; padding: 12px; }
+  tr { border: 1px solid #ccc; margin-bottom: 20px; border-radius: 12px; background: white; padding: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
   td {
     border: none;
     position: relative;
-    padding-left: 50% !important;
+    padding-left: 45% !important;
     text-align: right !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+    min-height: 45px;
   }
   td:before {
     position: absolute;
     top: 12px;
     left: 12px;
-    width: 45%;
+    width: 40%;
     white-space: nowrap;
     text-align: left;
-    font-weight: bold;
-    color: #666;
+    font-weight: 800;
+    color: var(--secondary);
   }
   /* Setting fake headers for stat tables */
   td:nth-of-type(1):before { content: "Ismi"; }
@@ -460,4 +499,19 @@ input:focus, select:focus {
   td:nth-of-type(3):before { content: "Bogʻcha"; }
   td:nth-of-type(4):before { content: "Yulduzlar"; }
   td:nth-of-type(5):before { content: "Harakat"; }
+
+  /* Landing Page Specific Mobile Fixes */
+  .landing-icon {
+    font-size: 2.5rem !important; /* Scale down sun/key icons on mobile */
+  }
+  .landing-title {
+    font-size: 1.8rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 1.6rem !important; }
+  .btn { padding: 10px 16px; font-size: 0.9rem; }
+  .glass-card { padding: 15px; border-radius: 15px; }
+  .main-content { padding: 12px; }
 }
