@@ -11,7 +11,7 @@ export default function Landing() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  
+
   // Name fields
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -30,11 +30,11 @@ export default function Landing() {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!username || !password) return setError('Login va parolni kiriting!');
-    
+
     setLoading(true);
     setError('');
     playClickSound();
-    
+
     try {
       const res = await fetch('/api/students/login', {
         method: 'POST',
@@ -42,18 +42,18 @@ export default function Landing() {
         body: JSON.stringify({ username, password })
       });
       const data = await res.json();
-      
+
       if (res.ok) {
         // Clear director session if exists
         localStorage.removeItem('directorAuth');
-        saveUser({ 
+        saveUser({
           ...data,
           backendId: data.id,
-          location: { 
-            viloyat: data.viloyat, 
-            tuman: data.tuman, 
-            dmtt: data.dmtt, 
-            group: data.group 
+          location: {
+            viloyat: data.viloyat,
+            tuman: data.tuman,
+            dmtt: data.dmtt,
+            group: data.group
           }
         });
         localStorage.setItem('bolajon_points', data.points.toString());
@@ -81,7 +81,7 @@ export default function Landing() {
     if (!username || !password) return setError('Login va parolni kiriting!');
     if (password !== confirmPassword) return setError('Parollar mos kelmadi!');
     if (password.length < 4) return setError('Parol kamida 4 ta belgidan iborat bo\'lsin!');
-    
+
     playClickSound();
     const fullName = `${lastName} ${firstName} ${patronymic}`;
     // Save partial data and move to location selection
@@ -92,21 +92,21 @@ export default function Landing() {
   return (
     <div className="app-layout" style={{ justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
       <AnimatedBackground type="nursery" />
-      
-      <motion.div 
+
+      <motion.div
         className="glass-card"
         style={{ width: '100%', maxWidth: '450px', textAlign: 'center', zIndex: 1, position: 'relative', padding: '40px' }}
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
       >
         <motion.div
-           animate={{ y: [0, -10, 0], rotate: 360 }}
-           transition={{ 
-             y: { repeat: Infinity, duration: 3, ease: "easeInOut" },
-             rotate: { repeat: Infinity, duration: 10, ease: "linear" }
-           }}
-           className="landing-icon"
-           style={{ fontSize: '4rem', marginBottom: '20px', display: 'inline-block' }}
+          animate={{ y: [0, -10, 0], rotate: 360 }}
+          transition={{
+            y: { repeat: Infinity, duration: 3, ease: "easeInOut" },
+            rotate: { repeat: Infinity, duration: 10, ease: "linear" }
+          }}
+          className="landing-icon"
+          style={{ fontSize: '4rem', marginBottom: '20px', display: 'inline-block' }}
         >
           {mode === 'login' ? '🔑' : (regStep === 1 ? '☀️' : '🚀')}
         </motion.div>
@@ -142,8 +142,8 @@ export default function Landing() {
           )}
 
           {mode === 'register' && regStep === 2 && (
-             <AnimatePresence mode="wait">
-             <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+            <AnimatePresence mode="wait">
+              <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
                 <div className="form-group" style={{ marginBottom: '15px' }}>
                   <div style={{ position: 'relative' }}>
                     <UserPlus size={20} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
@@ -162,8 +162,8 @@ export default function Landing() {
                     <input type="password" placeholder="Parolni tasdiqlang..." value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} style={{ paddingLeft: '45px' }} />
                   </div>
                 </div>
-             </motion.div>
-           </AnimatePresence>
+              </motion.div>
+            </AnimatePresence>
           )}
 
           {mode === 'login' && (
@@ -188,7 +188,7 @@ export default function Landing() {
               mode === 'login' ? <>Kirish <ArrowRight size={20} /></> : (regStep === 1 ? <>Keyingisi <ArrowRight size={20} /></> : <>Roʻyxatdan oʻtish <ArrowRight size={20} /></>)
             )}
           </button>
-          
+
           {mode === 'register' && regStep === 2 && (
             <button type="button" onClick={() => setRegStep(1)} style={{ marginTop: '15px', background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '0.9rem' }}>
               ⬅️ Ortga qaytish
@@ -197,7 +197,7 @@ export default function Landing() {
         </form>
 
         <div style={{ marginTop: '25px', paddingTop: '20px', borderTop: '1px solid #eee' }}>
-          <button 
+          <button
             onClick={() => { playClickSound(); setMode(mode === 'login' ? 'register' : 'login'); setRegStep(1); setError(''); }}
             style={{ background: 'none', border: 'none', color: '#6366f1', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem' }}
           >
