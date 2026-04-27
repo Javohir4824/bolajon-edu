@@ -12,6 +12,10 @@ export default function SuperAdminPanel() {
   const [superPassword, setSuperPassword] = useState('');
 
   const [activeTab, setActiveTab] = useState('upload');
+  const [msg, setMsg] = useState('');
+  const [msgType, setMsgType] = useState('success'); 
+  const [uploading, setUploading] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [employeeType, setEmployeeType] = useState('teacher');
 
   const [logs, setLogs] = useState([]);
@@ -51,7 +55,6 @@ export default function SuperAdminPanel() {
   const [hDmtt, setHDmtt] = useState('');
 
   const [students, setStudents] = useState([]);
-  const [msg, setMsg] = useState('');
 
   useEffect(() => {
     setTUsername('');
@@ -130,9 +133,6 @@ export default function SuperAdminPanel() {
       else if (type === 'image') setImages([...images, data.url]);
     } catch (err) { alert('Yuklashda xatolik'); } finally { setUploading(false); }
   };
-
-  const [msg, setMsg] = useState('');
-  const [msgType, setMsgType] = useState('success'); // 'success' or 'error'
 
   const handleSaveResource = async () => {
     if (!theme) {

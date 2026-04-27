@@ -26,10 +26,10 @@ export default function MonthLessons() {
       
       // Helper to map specific student group to general admin category
       const getCategory = (g) => {
-        if (g.includes('kichik')) return 'Kichik guruh';
-        if (g.includes('oʻrta') || g.includes('orta')) return 'Oʻrta guruh';
-        if (g.includes('katta') || g.includes('kotta')) return 'Katta guruh';
-        if (g.includes('tayyorlov')) return 'Tayyorlov guruh';
+        if (g.includes('kichik')) return 'Kichik';
+        if (g.includes('oʻrta') || g.includes('orta')) return 'Oʻrta';
+        if (g.includes('katta') || g.includes('kotta')) return 'Katta';
+        if (g.includes('tayyorlov')) return 'Tayyorlov';
         return '';
       };
 

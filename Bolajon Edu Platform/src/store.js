@@ -48,7 +48,7 @@ export const mockData = {
     '1-Katta', '2-Katta', '3-Katta', 
     '1-Tayyorlov', '2-Tayyorlov', '3-Tayyorlov'
   ],
-  adminGroups: ['Kichik guruh', 'Oʻrta guruh', 'Katta guruh', 'Tayyorlov guruh']
+  adminGroups: ['Kichik', 'Oʻrta', 'Katta', 'Tayyorlov']
 };
 
 export const useAppStore = () => {
