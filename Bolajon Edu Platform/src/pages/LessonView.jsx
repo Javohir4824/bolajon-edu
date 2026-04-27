@@ -229,7 +229,20 @@ export default function LessonView() {
                     {centerResource.videoUrl && (
                       <div className="glass-card" style={{ padding: '16px' }}>
                         <h3 style={{ marginBottom: '12px', color: '#333' }}>🎥 Video Dars</h3>
-                        <video controls controlsList="nodownload" onContextMenu={(e) => e.preventDefault()} src={getMediaUrl(centerResource.videoUrl)} style={{ width: '100%', borderRadius: '12px', maxHeight: '400px', background: '#000' }} />
+                        {centerResource.videoUrl.includes('youtube.com') || centerResource.videoUrl.includes('youtu.be') ? (
+                          <iframe 
+                            width="100%" 
+                            height="315" 
+                            src={centerResource.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')} 
+                            title="YouTube video player" 
+                            frameBorder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowFullScreen
+                            style={{ borderRadius: '12px' }}
+                          ></iframe>
+                        ) : (
+                          <video controls controlsList="nodownload" onContextMenu={(e) => e.preventDefault()} src={getMediaUrl(centerResource.videoUrl)} style={{ width: '100%', borderRadius: '12px', maxHeight: '400px', background: '#000' }} />
+                        )}
                       </div>
                     )}
                     
