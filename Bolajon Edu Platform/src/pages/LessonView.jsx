@@ -2,141 +2,42 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
-import TopBar from '../components/TopBar';
-import { CheckCircle, Play, Pause, ChevronRight, X } from 'lucide-react';
 import AnimatedBackground from '../components/AnimatedBackground';
+import { ChevronLeft, X, Play, Music, Image as ImageIcon, FileText } from 'lucide-react';
 
 export default function LessonView() {
-  const { id, lessonId } = useParams();
-  const { mockData, playClickSound, addPoints, user } = useAppContext();
-  const [activeSection, setActiveSection] = useState(null);
-  const [completed, setCompleted] = useState({});
-  const [resources, setResources] = useState([]);
-  const [uploadingHW, setUploadingHW] = useState(false);
-  const [hwStatus, setHwStatus] = useState({});
-  
+  const { monthId, weekIndex } = useParams();
   const navigate = useNavigate();
+  const { mockData, playClickSound, user, normalize, getGroupCategory } = useAppContext();
+  const [resources, setResources] = useState([]);
+  const [activeCenter, setActiveCenter] = useState(null);
 
-  const monthData = mockData?.months?.find(m => m.id === id);
-  const theme = monthData?.themes ? monthData.themes[lessonId] : '';
+  const month = mockData.months.find(m => m.id === monthId);
+  const theme = month?.themes[weekIndex];
+  const weekLabel = `${parseInt(weekIndex) + 1}-hafta`;
 
   useEffect(() => {
-    if (!monthData || !theme) return;
-
-    const fetchResources = async () => {
-      try {
-        const res = await fetch(`/api/resources?t=${Date.now()}`);
-        if (!res.ok) throw new Error('Network error');
-        const data = await res.json();
-
-        const studentGroup = String(user?.location?.group || '').toLowerCase();
-        
-        const getCategory = (g) => {
-          if (g.includes('kichik')) return 'Kichik';
-          if (g.includes('oʻrta') || g.includes('orta')) return 'Oʻrta';
-          if (g.includes('katta') || g.includes('kotta')) return 'Katta';
-          if (g.includes('tayyorlov')) return 'Tayyorlov';
-          return '';
-        };
-
-        const targetCategory = getCategory(studentGroup);
-        const fuzzy = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-
-        const filtered = data.filter(r => 
-          fuzzy(r.month) === fuzzy(monthData.name) && 
-          fuzzy(r.theme) === fuzzy(theme) &&
-          fuzzy(r.group) === fuzzy(targetCategory)
-        );
-        
-        setResources(filtered);
-      } catch (e) { 
-        console.error('Error fetching resources', e); 
-      }
-    };
     fetchResources();
-  }, [id, lessonId, user?.location?.group]);
+  }, [monthId, weekIndex, user?.groupCategory]);
 
-  const handleSectionClick = (section) => {
-    playClickSound();
-    setActiveSection(section);
-  };
-
-  const closeModal = () => {
-    playClickSound();
-    setActiveSection(null);
-  };
-
-  const markComplete = (sectionId) => {
-    playClickSound();
-    if (!completed[sectionId]) {
-      setCompleted({ ...completed, [sectionId]: true });
-    }
-  };
-
-  const nextCenter = () => {
-    const currentIndex = mockData.sections.findIndex(s => s.id === activeSection.id);
-    if (currentIndex < mockData.sections.length - 1) {
-      markComplete(activeSection.id);
-      setActiveSection(mockData.sections[currentIndex + 1]);
-    } else {
-      markComplete(activeSection.id);
-      closeModal();
-    }
-  };
-
-  const uploadHomework = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setUploadingHW(true);
-    const formData = new FormData();
-    formData.append('file', file);
-
+  const fetchResources = async () => {
     try {
-      // 1. Upload file
-      const uploadRes = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-      });
-      const uploadData = await uploadRes.json();
+      const res = await fetch(`/api/resources?t=${Date.now()}`);
+      const all = await res.json();
+      
+      const targetCategory = user?.groupCategory || getGroupCategory(user?.location?.group || '');
 
-      // 2. Submit homework data
-      await fetch('/api/homeworks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          studentName: user.name,
-          viloyat: user.location.viloyat,
-          tuman: user.location.tuman,
-          dmtt: user.location.dmtt,
-          group: user.location.group,
-          month: monthData.name,
-          theme: theme,
-          center: activeSection.name,
-          fileUrl: uploadData.url
-        })
-      });
-
-      setHwStatus({ ...hwStatus, [activeSection.id]: true });
-      alert("Vazifa ustozga yuborildi! Barakalla!");
-    } catch(err) {
-      alert("Xatolik yuz berdi :(");
-    } finally {
-      setUploadingHW(false);
-    }
+      const filtered = all.filter(r => 
+        normalize(r.month) === normalize(monthId) && 
+        normalize(r.group) === normalize(targetCategory) &&
+        normalize(r.theme) === normalize(theme)
+      );
+      setResources(filtered);
+    } catch (e) { console.error(e); }
   };
 
-  const getSeason = (monthId) => {
-    if (['sentyabr', 'oktyabr', 'noyabr'].includes(monthId)) return 'autumn';
-    if (['dekabr', 'yanvar', 'fevral'].includes(monthId)) return 'winter';
-    if (['mart', 'aprel', 'may'].includes(monthId)) return 'spring';
-    return 'dashboard';
-  };
-
-  // Helper to get correct media URL
   const getMediaUrl = (url) => {
     if (!url) return '';
-    // Handle Google Drive links
     if (url.includes('drive.google.com')) {
       const fileId = url.split('/d/')[1]?.split('/')[0];
       if (fileId) return `https://drive.google.com/uc?export=download&id=${fileId}`;
@@ -145,39 +46,37 @@ export default function LessonView() {
     return url;
   };
 
-  // Helper for fuzzy matching in JSX
-  const fuzzy = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const renderVideo = (url) => {
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      const embedUrl = url.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/');
+      return (
+        <iframe width="100%" height="315" src={embedUrl} title="Video" frameBorder="0" allowFullScreen style={{ borderRadius: '15px' }}></iframe>
+      );
+    }
+    return <video controls src={getMediaUrl(url)} style={{ width: '100%', borderRadius: '15px', background: '#000' }} />;
+  };
 
-  // Find media if uploaded by Admin for this specific center
-  const centerResource = activeSection ? resources.find(r => 
-    fuzzy(r.center) === fuzzy(activeSection.name) || 
-    fuzzy(r.center).includes(fuzzy(activeSection.name))
-  ) : null;
   return (
     <div className="app-layout" style={{ position: 'relative' }}>
-      <AnimatedBackground type={getSeason(id)} />
-      <TopBar title={theme || 'Faoliyat Markazlari'} />
+      <AnimatedBackground type="nursery" />
       
-      <main className="main-content" style={{ zIndex: 1, position: 'relative' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '32px', color: '#555', fontSize: '2rem' }}>
-          Markazlarni tanlang va oʻrganing! 🪄
-        </h2>
-        
+      <header className="dashboard-header" style={{ position: 'relative', zIndex: 10 }}>
+        <button className="btn-back" onClick={() => navigate(-1)} style={{ background: 'rgba(255,255,255,0.2)', padding: '10px 20px', borderRadius: '15px', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', border: 'none', cursor: 'pointer' }}>
+          <ChevronLeft size={24} /> ORQAGA
+        </button>
+        <div style={{ textAlign: 'right' }}>
+          <h2 style={{ color: 'white', margin: 0, fontSize: '1.2rem' }}>{theme}</h2>
+          <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem' }}>{weekLabel}</span>
+        </div>
+      </header>
+
+      <main className="main-content" style={{ zIndex: 1, position: 'relative', marginTop: '20px' }}>
         <div className="sections-grid">
-          {mockData.sections.map((section, idx) => {
-            const isDone = completed[section.id];
-            
+          {mockData.sections.map((section) => {
+            const centerResource = resources.find(r => normalize(r.center) === normalize(section.name));
             return (
-              <motion.div 
+              <motion.div
                 key={section.id}
-                className="section-item"
-                onClick={() => handleSectionClick(section)}
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: idx * 0.1 }}
-                style={{ 
-                  border: isDone ? `4px solid var(--success)` : `2px solid #e0f2fe`,
-                  background: isDone ? '#e8f5e9' : '' 
                 className="glass-card"
                 whileHover={{ scale: 1.05, y: -5 }}
                 onClick={() => { playClickSound(); setActiveCenter(section); }}
@@ -247,49 +146,24 @@ export default function LessonView() {
                         </div>
                       </div>
                     )}
-                          </div>
-                        </object>
+                    {res.slidesUrl && (
+                      <div className="media-section">
+                        <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}><FileText size={18} /> PDF Qoʻllanma</h4>
+                        <a href={getMediaUrl(res.slidesUrl)} target="_blank" rel="noreferrer" className="btn primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+                          Faylni ochish <FileText size={18} />
+                        </a>
                       </div>
                     )}
-
-                    {/* VAZIFA YUKLASH QISMI */}
-                    <div className="glass-card" style={{ padding: '20px', background: '#e0f2fe', border: '2px dashed #38bdf8' }}>
-                       <h3 style={{ color: '#0284c7', marginBottom: '10px' }}>📤 Vazifani topshirish</h3>
-                       <p style={{ marginBottom: '16px', color: '#0369a1' }}>Bajargan ishingizni rasm yoki video koʻrinishida yuboring!</p>
-                       
-                       {hwStatus[activeSection.id] ? (
-                          <div style={{ color: 'var(--success)', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <CheckCircle size={24} /> Vazifa ustozga yetkazildi!
-                          </div>
-                       ) : (
-                          <label style={{ display: 'inline-block', background: '#0ea5e9', color: 'white', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-                            {uploadingHW ? "Yuklanmoqda..." : "Fayl tanlash va Yuborish 📥"}
-                            <input type="file" onChange={uploadHomework} accept="image/*,video/*,audio/*" style={{ display: 'none' }} disabled={uploadingHW} />
-                          </label>
-                       )}
-                    </div>
-
                   </div>
-                ) : (
-                  <div style={{ textAlign: 'center', padding: '60px 20px', color: '#777' }}>
-                    <div style={{ fontSize: '4rem', marginBottom: '16px', opacity: 0.5 }}>🚧</div>
-                    <h3>Oʻqituvchi hali bu markazga material yuklamagan</h3>
-                    <p>Lekin siz shu markazda xayoliy oʻyinlar oʻynashingiz mumkin!</p>
+                ))}
+
+                {resources.filter(r => normalize(r.center) === normalize(activeCenter.name)).length === 0 && (
+                  <div style={{ textAlign: 'center', padding: '50px', color: '#94a3b8' }}>
+                    <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📁</div>
+                    <p>Hozircha ushbu markazda materiallar yoʻq</p>
                   </div>
                 )}
-                
               </div>
-
-              {/* Footer */}
-              <div style={{ padding: '24px', background: 'white', borderTop: '2px solid #eee', display: 'flex', justifyContent: 'flex-end' }}>
-                <button 
-                  onClick={nextCenter}
-                  style={{ padding: '16px 32px', background: activeSection.bgColor, color: 'white', fontWeight: 'bold', fontSize: '1.2rem', borderRadius: '50px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: `0 4px 15px ${activeSection.bgColor}80` }}
-                >
-                  Keyingi markazga oʻtish <ChevronRight size={24} />
-                </button>
-              </div>
-
             </motion.div>
           </motion.div>
         )}
