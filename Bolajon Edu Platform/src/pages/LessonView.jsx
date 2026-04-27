@@ -17,14 +17,16 @@ export default function LessonView() {
   
   const navigate = useNavigate();
 
-  const monthData = mockData.months.find(m => m.id === id);
-  const theme = monthData?.themes[lessonId];
+  const monthData = mockData?.months?.find(m => m.id === id);
+  const theme = monthData?.themes ? monthData.themes[lessonId] : '';
 
   useEffect(() => {
+    if (!monthData || !theme) return;
+
     const fetchResources = async () => {
       try {
-        // Cache-busting: add a timestamp to avoid getting old data
         const res = await fetch(`/api/resources?t=${Date.now()}`);
+        if (!res.ok) throw new Error('Network error');
         const data = await res.json();
 
         const studentGroup = String(user?.location?.group || '').toLowerCase();
@@ -38,7 +40,6 @@ export default function LessonView() {
         };
 
         const targetCategory = getCategory(studentGroup);
-        // Fuzzy clean: remove ALL non-alphanumeric characters for comparison
         const fuzzy = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
         const filtered = data.filter(r => 
@@ -46,11 +47,14 @@ export default function LessonView() {
           fuzzy(r.theme) === fuzzy(theme) &&
           fuzzy(r.group) === fuzzy(targetCategory)
         );
-        if (filtered.length > 0) setResources(filtered);
-      } catch (e) { console.error('Error fetching resources', e); }
+        
+        setResources(filtered);
+      } catch (e) { 
+        console.error('Error fetching resources', e); 
+      }
     };
     fetchResources();
-  }, [monthData, theme, user.location.group]);
+  }, [id, lessonId, user?.location?.group]);
 
   const handleSectionClick = (section) => {
     playClickSound();
@@ -137,9 +141,14 @@ export default function LessonView() {
     return url;
   };
 
-  // Find media if uploaded by Admin for this specific center
-  const centerResource = activeSection ? resources.find(r => r.center.toLowerCase() === activeSection.name.toLowerCase() || r.center.includes(activeSection.name)) : null;
+  // Helper for fuzzy matching in JSX
+  const fuzzy = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
+  // Find media if uploaded by Admin for this specific center
+  const centerResource = activeSection ? resources.find(r => 
+    fuzzy(r.center) === fuzzy(activeSection.name) || 
+    fuzzy(r.center).includes(fuzzy(activeSection.name))
+  ) : null;
   return (
     <div className="app-layout" style={{ position: 'relative' }}>
       <AnimatedBackground type={getSeason(id)} />
