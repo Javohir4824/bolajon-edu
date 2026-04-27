@@ -131,8 +131,15 @@ export default function SuperAdminPanel() {
     } catch (err) { alert('Yuklashda xatolik'); } finally { setUploading(false); }
   };
 
+  const [msg, setMsg] = useState('');
+  const [msgType, setMsgType] = useState('success'); // 'success' or 'error'
+
   const handleSaveResource = async () => {
-    if (!theme) return setMsg('Iltimos, hafta mavzusini kiriting!');
+    if (!theme) {
+      setMsgType('error');
+      setMsg('Iltimos, hafta mavzusini kiriting!');
+      return;
+    }
     const payload = { month, week, theme, center, group: resGroup, videoUrl, audioUrl, images, slidesUrl };
     try {
       if (editingId) {
@@ -141,11 +148,16 @@ export default function SuperAdminPanel() {
       } else {
         await fetch('/api/resources', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       }
+      setMsgType('success');
       setMsg('Saqlandi! ✅');
       setVideoUrl(''); setAudioUrl(''); setImages([]); setSlidesUrl('');
       fetchResources();
       setTimeout(() => setMsg(''), 3000);
-    } catch (e) { setMsg('Xatolik yuz berdi.'); }
+    } catch (e) { 
+      setMsgType('error');
+      setMsg('Xatolik yuz berdi.'); 
+      setTimeout(() => setMsg(''), 5000);
+    }
   };
 
   const clean = (s) => String(s || '').toLowerCase().trim().replace(/[^a-z0-9]/g, '');
@@ -302,7 +314,16 @@ export default function SuperAdminPanel() {
           <motion.div 
             initial={{ y: -20, opacity: 0 }} 
             animate={{ y: 0, opacity: 1 }} 
-            style={{ padding: '15px', background: 'var(--success)', color: 'white', marginBottom: '20px', borderRadius: '15px', fontWeight: 'bold', textAlign: 'center', boxShadow: '0 5px 15px rgba(44,214,82,0.3)' }}
+            style={{ 
+              padding: '15px', 
+              background: msgType === 'error' ? 'var(--danger)' : 'var(--success)', 
+              color: 'white', 
+              marginBottom: '20px', 
+              borderRadius: '15px', 
+              fontWeight: 'bold', 
+              textAlign: 'center', 
+              boxShadow: msgType === 'error' ? '0 5px 15px rgba(255,90,90,0.3)' : '0 5px 15px rgba(44,214,82,0.3)' 
+            }}
           >
             {msg}
           </motion.div>
