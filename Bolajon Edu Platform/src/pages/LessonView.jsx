@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
@@ -26,21 +26,23 @@ export default function LessonView() {
         const res = await fetch('/api/resources');
         const data = await res.json();
 
-        const studentGroupRaw = user?.location?.group || '';
-        const low = studentGroupRaw.toLowerCase();
-        let simplifiedGroupName = '';
-        if (low.includes('kichik')) simplifiedGroupName = 'Kichik';
-        else if (low.includes('oʻrta') || low.includes('oвЂrta') || low.includes('oʻrta')) simplifiedGroupName = 'Oʻrta';
-        else if (low.includes('katta') || low.includes('kotta')) simplifiedGroupName = 'Katta';
-        else if (low.includes('tayyorlov')) simplifiedGroupName = 'Tayyorlov';
+        const studentGroup = String(user?.location?.group || '').toLowerCase();
+        
+        const getCategory = (g) => {
+          if (g.includes('kichik')) return 'Kichik guruh';
+          if (g.includes('oʻrta') || g.includes('orta')) return 'Oʻrta guruh';
+          if (g.includes('katta') || g.includes('kotta')) return 'Katta guruh';
+          if (g.includes('tayyorlov')) return 'Tayyorlov guruh';
+          return '';
+        };
 
+        const targetCategory = getCategory(studentGroup);
         const clean = (s) => String(s || '').replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
 
-        // Filter by month, theme and MAPPED GROUP
         const filtered = data.filter(r => 
           r.month === monthData.name && 
           clean(r.theme) === clean(theme) &&
-          r.group === simplifiedGroupName
+          r.group === targetCategory
         );
         if (filtered.length > 0) setResources(filtered);
       } catch (e) { console.error('Error fetching resources', e); }

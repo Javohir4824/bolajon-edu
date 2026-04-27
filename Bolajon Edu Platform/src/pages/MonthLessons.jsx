@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
@@ -22,17 +22,23 @@ export default function MonthLessons() {
       const res = await fetch('/api/resources');
       const all = await res.json();
       
-      const studentGroupRaw = user?.location?.group || '';
-      let simplifiedGroupName = '';
-      if (studentGroupRaw.includes('kichik')) simplifiedGroupName = 'Kichik';
-      else if (studentGroupRaw.includes('oвЂrta') || studentGroupRaw.includes('orta')) simplifiedGroupName = 'OвЂrta';
-      else if (studentGroupRaw.includes('kotta')) simplifiedGroupName = 'Katta';
-      else if (studentGroupRaw.includes('tayyorlov')) simplifiedGroupName = 'Tayyorlov';
+      const studentGroup = String(user?.location?.group || '').toLowerCase();
+      
+      // Helper to map specific student group to general admin category
+      const getCategory = (g) => {
+        if (g.includes('kichik')) return 'Kichik guruh';
+        if (g.includes('oʻrta') || g.includes('orta')) return 'Oʻrta guruh';
+        if (g.includes('katta') || g.includes('kotta')) return 'Katta guruh';
+        if (g.includes('tayyorlov')) return 'Tayyorlov guruh';
+        return '';
+      };
 
-      // Filter for this month and studentʻs group
+      const targetCategory = getCategory(studentGroup);
+
+      // Filter for this month and student's group category
       const filtered = all.filter(r => 
         r.month.toLowerCase() === id.toLowerCase() && 
-        r.group === simplifiedGroupName
+        r.group === targetCategory
       );
       setAdminResources(filtered);
     } catch (e) { console.error(e); }

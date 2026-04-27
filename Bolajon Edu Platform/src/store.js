@@ -42,7 +42,12 @@ export const mockData = {
     { id: 'fan', name: 'Fan va tabiat', icon: '🌱', bgColor: '#2CD652' },
     { id: 'sanat', name: 'Sanʻat markazi', icon: '🎨', bgColor: '#9C27B0' }
   ],
-  groups: ['Kichik guruh', 'Oʻrta guruh', 'Katta guruh', 'Tayyorlov guruh'],
+  groups: [
+    '1-Kichik', '2-Kichik', '3-Kichik', 
+    '1-Oʻrta', '2-Oʻrta', '3-Oʻrta', 
+    '1-Katta', '2-Katta', '3-Katta', 
+    '1-Tayyorlov', '2-Tayyorlov', '3-Tayyorlov'
+  ],
   adminGroups: ['Kichik guruh', 'Oʻrta guruh', 'Katta guruh', 'Tayyorlov guruh']
 };
 
