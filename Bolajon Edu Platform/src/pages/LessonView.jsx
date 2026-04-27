@@ -127,6 +127,14 @@ export default function LessonView() {
     return 'dashboard';
   };
 
+  // Helper to get correct media URL
+  const getMediaUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    // If it's a relative path like /uploads/..., it will work fine on the same domain
+    return url;
+  };
+
   // Find media if uploaded by Admin for this specific center
   const centerResource = activeSection ? resources.find(r => r.center.toLowerCase() === activeSection.name.toLowerCase() || r.center.includes(activeSection.name)) : null;
 
@@ -210,14 +218,14 @@ export default function LessonView() {
                     {centerResource.videoUrl && (
                       <div className="glass-card" style={{ padding: '16px' }}>
                         <h3 style={{ marginBottom: '12px', color: '#333' }}>🎥 Video Dars</h3>
-                        <video controls controlsList="nodownload" onContextMenu={(e) => e.preventDefault()} src={centerResource.videoUrl} style={{ width: '100%', borderRadius: '12px', maxHeight: '400px', background: '#000' }} />
+                        <video controls controlsList="nodownload" onContextMenu={(e) => e.preventDefault()} src={getMediaUrl(centerResource.videoUrl)} style={{ width: '100%', borderRadius: '12px', maxHeight: '400px', background: '#000' }} />
                       </div>
                     )}
                     
                     {centerResource.audioUrl && (
                       <div className="glass-card" style={{ padding: '16px' }}>
                         <h3 style={{ marginBottom: '12px', color: '#333' }}>🎵 Audio Material</h3>
-                        <audio controls controlsList="nodownload" onContextMenu={(e) => e.preventDefault()} src={centerResource.audioUrl} style={{ width: '100%' }} />
+                        <audio controls controlsList="nodownload" onContextMenu={(e) => e.preventDefault()} src={getMediaUrl(centerResource.audioUrl)} style={{ width: '100%' }} />
                       </div>
                     )}
 
@@ -226,7 +234,7 @@ export default function LessonView() {
                         <h3 style={{ marginBottom: '12px', color: '#333' }}>🖼️ Rasmlar Toʻplami</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
                           {centerResource.images.map((img, i) => (
-                            <img key={i} onContextMenu={(e) => e.preventDefault()} src={img} alt="Resource" style={{ width: '100%', maxWidth: '800px', height: 'auto', maxHeight: '500px', objectFit: 'contain', borderRadius: '12px', border: '2px solid #eee' }} />
+                            <img key={i} onContextMenu={(e) => e.preventDefault()} src={getMediaUrl(img)} alt="Resource" style={{ width: '100%', maxWidth: '800px', height: 'auto', maxHeight: '500px', objectFit: 'contain', borderRadius: '12px', border: '2px solid #eee' }} />
                           ))}
                         </div>
                       </div>
@@ -237,7 +245,7 @@ export default function LessonView() {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                           <h3 style={{ margin: 0, color: '#333' }}>📄 Slayd / PDF</h3>
                         </div>
-                        <object data={centerResource.slidesUrl} type="application/pdf" width="100%" height="600px" style={{ borderRadius: '12px', border: '1px solid #ccc', backgroundColor: '#f0f0f0' }}>
+                        <object data={getMediaUrl(centerResource.slidesUrl)} type="application/pdf" width="100%" height="600px" style={{ borderRadius: '12px', border: '1px solid #ccc', backgroundColor: '#f0f0f0' }}>
                           <div style={{ padding: '40px', textAlign: 'center', background: '#f9f9f9', borderRadius: '12px', color: '#555' }}>
                             <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📄</div>
                             <p style={{ margin: '0 0 16px 0', fontSize: '1.2rem' }}>Aftidan brauzer bu formatdagi faylni toʻgʻridan-toʻgʻri ocholmaydi.</p>
