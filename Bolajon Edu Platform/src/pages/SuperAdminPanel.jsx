@@ -282,8 +282,9 @@ export default function SuperAdminPanel() {
 
         <div className="responsive-tabs" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '32px', justifyContent: 'center' }}>
           {[
-            { id: 'upload', icon: '📚', label: 'Darsliklar' },
-            { id: 'teachers', icon: '👥', label: 'Xodimlar' },
+            { id: 'upload', label: 'Darsliklar', icon: '📚' },
+            { id: 'manage', label: 'Boshqarish', icon: '⚙️' },
+            { id: 'teachers', label: 'Xodimlar', icon: '👤' },
             { id: 'stats', icon: '📊', label: 'Reyting' },
             { id: 'pupils', icon: '🧒', label: 'Bolajonlar' },
             { id: 'dmtts', icon: '🏢', label: 'Bogʻchalar' },
@@ -409,6 +410,43 @@ export default function SuperAdminPanel() {
             <button onClick={handleSaveResource} className="btn primary" style={{ width: '100%', padding: '20px' }}>
               Materialni Saqlash ✅
             </button>
+          </motion.div>
+        )}
+
+        {/* MANAGE TAB */}
+        {activeTab === 'manage' && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <h2 style={{ marginBottom: '25px', color: 'var(--text-dark)', borderLeft: '5px solid var(--primary)', paddingLeft: '15px' }}>⚙️ Darsliklarni Boshqarish</h2>
+            <div className="glass-card" style={{ padding: '20px', overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ textAlign: 'left', borderBottom: '2px solid #eee' }}>
+                    <th style={{ padding: '12px' }}>Oy/Hafta</th>
+                    <th style={{ padding: '12px' }}>Mavzu</th>
+                    <th style={{ padding: '12px' }}>Guruh</th>
+                    <th style={{ padding: '12px' }}>Amal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {resources.map(res => (
+                    <tr key={res.id} style={{ borderBottom: '1px solid #f5f5f5' }}>
+                      <td style={{ padding: '12px' }}>{res.month} / {res.week}</td>
+                      <td style={{ padding: '12px' }}>{res.theme}</td>
+                      <td style={{ padding: '12px' }}>{res.group}</td>
+                      <td style={{ padding: '12px' }}>
+                        <button 
+                          onClick={() => { if(window.confirm('Oʻchirmoqchimisiz?')) deleteResource(res.id); }}
+                          style={{ background: 'var(--danger)', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer' }}
+                        >
+                          Oʻchirish 🗑️
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {resources.length === 0 && <tr><td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>Darsliklar mavjud emas</td></tr>}
+                </tbody>
+              </table>
+            </div>
           </motion.div>
         )}
 

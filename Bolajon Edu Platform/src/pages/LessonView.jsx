@@ -136,8 +136,12 @@ export default function LessonView() {
   // Helper to get correct media URL
   const getMediaUrl = (url) => {
     if (!url) return '';
+    // Handle Google Drive links
+    if (url.includes('drive.google.com')) {
+      const fileId = url.split('/d/')[1]?.split('/')[0];
+      if (fileId) return `https://drive.google.com/uc?export=download&id=${fileId}`;
+    }
     if (url.startsWith('http')) return url;
-    // If it's a relative path like /uploads/..., it will work fine on the same domain
     return url;
   };
 
