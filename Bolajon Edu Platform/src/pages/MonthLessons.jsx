@@ -2,105 +2,79 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
-import TopBar from '../components/TopBar';
 import AnimatedBackground from '../components/AnimatedBackground';
+import { ChevronLeft, BookOpen } from 'lucide-react';
 
 export default function MonthLessons() {
   const { id } = useParams();
-  const { mockData, user, playClickSound } = useAppContext();
   const navigate = useNavigate();
+  const { mockData, playClickSound, user, normalize, getGroupCategory } = useAppContext();
   const [adminResources, setAdminResources] = useState([]);
 
-  const monthData = mockData.months.find(m => m.id === id);
+  const month = mockData.months.find(m => m.id === id);
 
   useEffect(() => {
     fetchResources();
-  }, [id, user]);
+  }, [id, user?.groupCategory]);
 
   const fetchResources = async () => {
     try {
       const res = await fetch(`/api/resources?t=${Date.now()}`);
       const all = await res.json();
       
-      const studentGroup = String(user?.location?.group || '').toLowerCase();
-      
-      const getCategory = (g) => {
-        if (g.includes('kichik')) return 'Kichik';
-        if (g.includes('oʻrta') || g.includes('orta')) return 'Oʻrta';
-        if (g.includes('katta') || g.includes('kotta')) return 'Katta';
-        if (g.includes('tayyorlov')) return 'Tayyorlov';
-        return '';
-      };
-
-      const targetCategory = getCategory(studentGroup);
-      const fuzzy = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const targetCategory = user?.groupCategory || getGroupCategory(user?.location?.group || '');
 
       const filtered = all.filter(r => 
-        fuzzy(r.month) === fuzzy(id) && 
-        fuzzy(r.group) === fuzzy(targetCategory)
+        normalize(r.month) === normalize(id) && 
+        normalize(r.group) === normalize(targetCategory)
       );
       setAdminResources(filtered);
     } catch (e) { console.error(e); }
   };
 
-  if (!monthData) return <div style={{ padding: '50px', textAlign: 'center' }}>Hech narsa topilmadi</div>;
-
-  const getSeason = (monthId) => {
-    if (['sentyabr', 'oktyabr', 'noyabr'].includes(monthId)) return 'autumn';
-    if (['dekabr', 'yanvar', 'fevral'].includes(monthId)) return 'winter';
-    if (['mart', 'aprel', 'may'].includes(monthId)) return 'spring';
-    return 'dashboard';
-  };
-
-  const handleThemeClick = (index) => {
+  const handleLessonLink = (index) => {
     playClickSound();
-    navigate(`/month/${id}/lesson/${index}`);
+    navigate(`/lesson/${id}/${index}`);
   };
+
+  if (!month) return <div>Oy topilmadi</div>;
 
   return (
     <div className="app-layout" style={{ position: 'relative' }}>
-      <AnimatedBackground type={getSeason(id)} />
-      <TopBar title={`${monthData.name} oyi mavzulari`} />
+      <AnimatedBackground type={id === 'dekabr' || id === 'yanvar' || id === 'fevral' ? 'winter' : 'nursery'} />
       
-      <main className="main-content" style={{ zIndex: 1, position: 'relative' }}>
-        <h1 style={{ textAlign: 'center', margin: '20px 0', fontSize: '2.5rem', color: monthData.color }}>
-          {monthData.name} Oyi 🚀
-        </h1>
-        
-        <div className="grid-cards" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
-          {[1, 2, 3, 4].map((weekNum, idx) => {
-             const weekKey = `${weekNum}-hafta`;
-             const adminRes = adminResources.find(r => r.week === weekKey);
-             const displayTheme = adminRes ? adminRes.theme : (monthData.themes[idx] || 'Mavzu belgilanmagan');
+      <header className="dashboard-header" style={{ position: 'relative', zIndex: 10 }}>
+        <button className="btn-back" onClick={() => navigate(-1)} style={{ background: 'rgba(255,255,255,0.2)', padding: '10px 20px', borderRadius: '15px', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', border: 'none', cursor: 'pointer' }}>
+          <ChevronLeft size={24} /> ORQAGA
+        </button>
+        <div className="month-title-badge" style={{ background: month.color, padding: '10px 25px', borderRadius: '25px', color: 'white', fontWeight: 'bold', fontSize: '1.4rem', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}>
+          {month.name} mashgʻulotlari
+        </div>
+      </header>
 
-             return (
-              <motion.div 
-                key={idx}
-                className="lesson-card"
-                style={{ 
-                  width: '100%', 
-                  maxWidth: '800px', 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center', 
-                  textAlign: 'left',
-                  borderLeft: adminRes ? `10px solid var(--secondary)` : 'none',
-                  background: adminRes ? 'linear-gradient(90deg, #f0f9ff, #ffffff)' : '#ffffff'
-                }}
-                onClick={() => handleThemeClick(idx)}
-                initial={{ x: -50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: idx * 0.1 }}
-                whileHover={{ scale: 1.02 }}
+      <main className="main-content" style={{ zIndex: 1, position: 'relative', marginTop: '30px' }}>
+        <div className="grid-cards">
+          {month.themes.map((theme, index) => {
+            const hasResource = adminResources.some(r => normalize(r.theme) === normalize(theme));
+            
+            return (
+              <motion.div
+                key={index}
+                className="glass-card lesson-card"
+                whileHover={{ y: -10, scale: 1.02 }}
+                onClick={() => handleLessonLink(index)}
+                style={{ cursor: 'pointer', borderLeft: `8px solid ${month.color}`, overflow: 'hidden' }}
               >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <h2 style={{ color: 'var(--text-dark)', margin: 0 }}>{weekNum}-Hafta: {displayTheme}</h2>
-                    {adminRes && <span style={{ fontSize: '0.7rem', background: 'var(--secondary)', color: 'white', padding: '2px 8px', borderRadius: '10px', fontWeight: 'bold' }}>YANGI</span>}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+                  <div style={{ background: `${month.color}22`, color: month.color, padding: '8px 15px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                    {index + 1}-hafta
                   </div>
-                  <p style={{ color: '#888', fontWeight: 'bold', marginTop: '5px' }}>Kirish qismi va 5 ta markaz</p>
+                  {hasResource && <span style={{ fontSize: '1.2rem' }}>⭐</span>}
                 </div>
-                <div style={{ fontSize: '2rem' }}>{adminRes ? '✨' : '👉'}</div>
+                <h3 style={{ fontSize: '1.3rem', color: '#2d3436', marginBottom: '15px', lineHeight: '1.4' }}>{theme}</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#636e72', fontSize: '0.9rem' }}>
+                  <BookOpen size={16} /> <span>Mashgʻulotni koʻrish</span>
+                </div>
               </motion.div>
              );
           })}

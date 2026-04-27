@@ -178,105 +178,75 @@ export default function LessonView() {
                 style={{ 
                   border: isDone ? `4px solid var(--success)` : `2px solid #e0f2fe`,
                   background: isDone ? '#e8f5e9' : '' 
-                }}
+                className="glass-card"
+                whileHover={{ scale: 1.05, y: -5 }}
+                onClick={() => { playClickSound(); setActiveCenter(section); }}
+                style={{ cursor: 'pointer', textAlign: 'center', padding: '30px 20px' }}
               >
-                <div className="section-icon" style={{ background: section.bgColor }}>
+                <div style={{ fontSize: '3.5rem', marginBottom: '15px', filter: 'drop-shadow(0 5px 10px rgba(0,0,0,0.1))' }}>
                   {section.icon}
                 </div>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 800 }}>{section.name}</h3>
-                {isDone && <CheckCircle color="var(--success)" size={32} style={{ position: 'absolute', top: 16, right: 16 }} />}
+                <h3 style={{ color: '#2d3436', fontSize: '1rem', fontWeight: 'bold' }}>{section.name}</h3>
+                {centerResource && <div style={{ marginTop: '10px', color: '#2ecc71', fontSize: '0.8rem' }}>✅ Material bor</div>}
               </motion.div>
             );
           })}
         </div>
       </main>
 
-      {/* DETAILED CONTENT MODAL */}
       <AnimatePresence>
-        {activeSection && (
+        {activeCenter && (
           <motion.div 
             className="modal-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={closeModal}
-            style={{ padding: '20px' }}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
           >
             <motion.div 
-              className="modal-content"
-              onClick={(e) => e.stopPropagation()}
-              initial={{ y: 100, scale: 0.9, opacity: 0 }}
-              animate={{ y: 0, scale: 1, opacity: 1 }}
-              exit={{ y: 100, scale: 0.9, opacity: 0 }}
-              style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+              className="glass-card"
+              initial={{ scale: 0.9, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              style={{ width: '100%', maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', background: 'white', borderRadius: '30px' }}
             >
-              {/* Header */}
-              <div style={{ background: activeSection.bgColor, padding: '24px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <span style={{ fontSize: '3rem' }}>{activeSection.icon}</span>
+              <div style={{ background: activeCenter.bgColor, padding: '25px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <span style={{ fontSize: '2.5rem' }}>{activeCenter.icon}</span>
                   <div>
-                    <h2 style={{ fontSize: '2rem', margin: 0 }}>{activeSection.name}</h2>
-                    <p style={{ margin: 0, opacity: 0.9 }}>{theme}</p>
+                    <h2 style={{ margin: 0, fontSize: '1.4rem' }}>{activeCenter.name}</h2>
+                    <p style={{ margin: 0, opacity: 0.8, fontSize: '0.9rem' }}>{theme}</p>
                   </div>
                 </div>
-                <button onClick={closeModal} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '12px', borderRadius: '50%', cursor: 'pointer' }}>
+                <button onClick={() => setActiveCenter(null)} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '10px', borderRadius: '50%', cursor: 'pointer' }}>
                   <X size={24} />
                 </button>
               </div>
 
-              {/* Body: Media Player Area */}
-              <div style={{ padding: '24px', overflowY: 'auto', flex: 1, background: '#f8fafc' }}>
-                
-                {centerResource ? (
-                  <div style={{ display: 'grid', gap: '24px' }}>
-                    
-                    {centerResource.videoUrl && (
-                      <div className="glass-card" style={{ padding: '16px' }}>
-                        <h3 style={{ marginBottom: '12px', color: '#333' }}>🎥 Video Dars</h3>
-                        {centerResource.videoUrl.includes('youtube.com') || centerResource.videoUrl.includes('youtu.be') ? (
-                          <iframe 
-                            width="100%" 
-                            height="315" 
-                            src={centerResource.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')} 
-                            title="YouTube video player" 
-                            frameBorder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowFullScreen
-                            style={{ borderRadius: '12px' }}
-                          ></iframe>
-                        ) : (
-                          <video controls controlsList="nodownload" onContextMenu={(e) => e.preventDefault()} src={getMediaUrl(centerResource.videoUrl)} style={{ width: '100%', borderRadius: '12px', maxHeight: '400px', background: '#000' }} />
-                        )}
+              <div style={{ padding: '30px' }}>
+                {resources.filter(r => normalize(r.center) === normalize(activeCenter.name)).map((res, i) => (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
+                    {res.videoUrl && (
+                      <div className="media-section">
+                        <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}><Play size={18} /> Video Mashgʻulot</h4>
+                        {renderVideo(res.videoUrl)}
                       </div>
                     )}
-                    
-                    {centerResource.audioUrl && (
-                      <div className="glass-card" style={{ padding: '16px' }}>
-                        <h3 style={{ marginBottom: '12px', color: '#333' }}>🎵 Audio Material</h3>
-                        <audio controls controlsList="nodownload" onContextMenu={(e) => e.preventDefault()} src={getMediaUrl(centerResource.audioUrl)} style={{ width: '100%' }} />
+                    {res.audioUrl && (
+                      <div className="media-section">
+                        <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}><Music size={18} /> Audio Material</h4>
+                        <audio controls src={getMediaUrl(res.audioUrl)} style={{ width: '100%' }} />
                       </div>
                     )}
-
-                    {centerResource.images && centerResource.images.length > 0 && (
-                      <div className="glass-card" style={{ padding: '16px' }}>
-                        <h3 style={{ marginBottom: '12px', color: '#333' }}>🖼️ Rasmlar Toʻplami</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
-                          {centerResource.images.map((img, i) => (
-                            <img key={i} onContextMenu={(e) => e.preventDefault()} src={getMediaUrl(img)} alt="Resource" style={{ width: '100%', maxWidth: '800px', height: 'auto', maxHeight: '500px', objectFit: 'contain', borderRadius: '12px', border: '2px solid #eee' }} />
+                    {res.images?.length > 0 && (
+                      <div className="media-section">
+                        <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}><ImageIcon size={18} /> Rasmlar</h4>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px' }}>
+                          {res.images.map((img, j) => (
+                            <img key={j} src={getMediaUrl(img)} style={{ width: '100%', borderRadius: '10px', boxShadow: '0 5px 15px rgba(0,0,0,0.1)' }} alt="Resource" />
                           ))}
                         </div>
                       </div>
                     )}
-
-                    {centerResource.slidesUrl && (
-                      <div className="glass-card" style={{ padding: '16px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                          <h3 style={{ margin: 0, color: '#333' }}>📄 Slayd / PDF</h3>
-                        </div>
-                        <object data={getMediaUrl(centerResource.slidesUrl)} type="application/pdf" width="100%" height="600px" style={{ borderRadius: '12px', border: '1px solid #ccc', backgroundColor: '#f0f0f0' }}>
-                          <div style={{ padding: '40px', textAlign: 'center', background: '#f9f9f9', borderRadius: '12px', color: '#555' }}>
-                            <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📄</div>
-                            <p style={{ margin: '0 0 16px 0', fontSize: '1.2rem' }}>Aftidan brauzer bu formatdagi faylni toʻgʻridan-toʻgʻri ocholmaydi.</p>
                           </div>
                         </object>
                       </div>

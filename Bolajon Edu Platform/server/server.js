@@ -47,13 +47,37 @@ if (!fs.existsSync(DATA_FILE)) {
 }
 
 function readData() {
-  const data = fs.readFileSync(DATA_FILE);
-  return JSON.parse(data);
+  try {
+    const data = fs.readFileSync(DATA_FILE);
+    return JSON.parse(data);
+  } catch (e) { return {}; }
 }
 
 function writeData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
+
+// Data Migration: Clean up old localhost URLs
+function migrateData() {
+  const db = readData();
+  let changed = false;
+  if (db.resources) {
+    db.resources = db.resources.map(r => {
+      const cleanUrl = (url) => typeof url === 'string' ? url.replace(/https?:\/\/localhost:\d+/g, '') : url;
+      const newR = { ...r };
+      if (newR.videoUrl) { const c = cleanUrl(newR.videoUrl); if(c !== newR.videoUrl){ newR.videoUrl = c; changed = true; } }
+      if (newR.audioUrl) { const c = cleanUrl(newR.audioUrl); if(c !== newR.audioUrl){ newR.audioUrl = c; changed = true; } }
+      if (newR.slidesUrl) { const c = cleanUrl(newR.slidesUrl); if(c !== newR.slidesUrl){ newR.slidesUrl = c; changed = true; } }
+      if (newR.images) { 
+        const newImgs = newR.images.map(cleanUrl);
+        if (JSON.stringify(newImgs) !== JSON.stringify(newR.images)) { newR.images = newImgs; changed = true; }
+      }
+      return newR;
+    });
+  }
+  if (changed) writeData(db);
+}
+migrateData();
 
 // --- STUDENT AUTH ---
 // Register

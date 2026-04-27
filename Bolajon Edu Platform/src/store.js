@@ -51,6 +51,18 @@ export const mockData = {
   adminGroups: ['Kichik', 'Oʻrta', 'Katta', 'Tayyorlov']
 };
 
+// Standardized helpers for the whole app
+export const normalize = (s) => String(s || '').toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+
+export const getGroupCategory = (g) => {
+  const slug = normalize(g);
+  if (slug.includes('kichik')) return 'Kichik';
+  if (slug.includes('orta') || slug.includes('oʻrta')) return 'Oʻrta';
+  if (slug.includes('katta') || slug.includes('kotta')) return 'Katta';
+  if (slug.includes('tayyorlov')) return 'Tayyorlov';
+  return 'Boshqa';
+};
+
 export const useAppStore = () => {
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('bolajon_user');
@@ -61,12 +73,19 @@ export const useAppStore = () => {
     return parseInt(localStorage.getItem('bolajon_points')) || 0;
   });
 
+  // Ensure user group is always categorized
+  const getCategorizedUser = (u) => {
+    if (!u) return null;
+    const category = getGroupCategory(u.location?.group || u.group || '');
+    return { ...u, groupCategory: category };
+  };
+
   useEffect(() => {
     if (user && (user.backendId || user.id)) {
       const targetId = user.backendId || user.id;
       const sync = async () => {
         try {
-          const res = await fetch(`/api/students/${targetId}`);
+          const res = await fetch(`/api/students/${targetId}?t=${Date.now()}`);
           const data = await res.json();
           if (data && data.points !== undefined) {
             setPoints(data.points);
@@ -75,18 +94,19 @@ export const useAppStore = () => {
         } catch(e) {}
       };
       sync();
-      const interval = setInterval(sync, 5000);
+      const interval = setInterval(sync, 10000);
       return () => clearInterval(interval);
     }
   }, [user]);
 
   const saveUser = (userData) => {
-    setUser(userData);
-    if (userData && userData.points !== undefined) {
-      setPoints(userData.points);
-      localStorage.setItem('bolajon_points', userData.points.toString());
+    const categorized = getCategorizedUser(userData);
+    setUser(categorized);
+    if (categorized && categorized.points !== undefined) {
+      setPoints(categorized.points);
+      localStorage.setItem('bolajon_points', categorized.points.toString());
     }
-    localStorage.setItem('bolajon_user', JSON.stringify(userData));
+    localStorage.setItem('bolajon_user', JSON.stringify(categorized));
   };
 
   const addPoints = (amount) => {
@@ -107,6 +127,8 @@ export const useAppStore = () => {
     saveUser,
     points,
     addPoints,
-    logout
+    logout,
+    normalize,
+    getGroupCategory
   };
 };
