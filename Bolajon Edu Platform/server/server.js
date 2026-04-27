@@ -268,9 +268,10 @@ app.post('/api/resources', (req, res) => {
 
 // DELETE a resource
 app.delete('/api/resources/:id', (req, res) => {
-  const data = readData();
-  data.resources = data.resources.filter(r => r.id !== parseInt(req.params.id));
-  writeData(data);
+  const { id } = req.params;
+  const db = readData();
+  db.resources = db.resources.filter(r => String(r.id) !== String(id));
+  writeData(db);
   res.json({ success: true });
 });
 

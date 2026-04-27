@@ -162,10 +162,17 @@ export default function SuperAdminPanel() {
 
   const clean = (s) => String(s || '').toLowerCase().trim().replace(/[^a-z0-9]/g, '');
 
-  const handleDeleteResource = async (id) => {
-    if (window.confirm('Rostdan ham o`chirmoqchimisiz?')) {
-      await fetch(`/api/resources/${id}`, { method: 'DELETE' });
-      fetchResources();
+  const deleteResource = async (id) => {
+    try {
+      const res = await fetch(`/api/resources/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setMsgType('success');
+        setMsg('Darslik oʻchirildi 🗑️');
+        fetchResources();
+        setTimeout(() => setMsg(''), 3000);
+      }
+    } catch (e) { 
+      alert('Oʻchirishda xatolik yuz berdi'); 
     }
   };
 
