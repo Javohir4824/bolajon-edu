@@ -249,10 +249,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'Fayl yuklanmadi' });
   }
-  const protocol = req.protocol;
-  const host = req.get('host');
-  const fileUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
-  
+  const fileUrl = `/uploads/${req.file.filename}`;
   res.json({ url: fileUrl });
 });
 

@@ -7,10 +7,10 @@
       "theme": "O‘zbekiston mening Vatanim",
       "center": "Qurish-yasash va matematika",
       "group": "Katta",
-      "videoUrl": "http://localhost:5000/uploads/1777118382400-1775691406_IMG_2097.mp4",
-      "audioUrl": "http://localhost:5000/uploads/1777118384627-Artem Smile - Ð¦Ñ‹Ð³Ð°Ð½ÐºÐ° Ð½Ð°Ð³Ð°Ð´Ð°Ð»Ð°.mp3",
+      "videoUrl": "/uploads/1777118382400-1775691406_IMG_2097.mp4",
+      "audioUrl": "/uploads/1777118384627-Artem Smile - Ð¦Ñ‹Ð³Ð°Ð½ÐºÐ° Ð½Ð°Ð³Ð°Ð´Ð°Ð»Ð°.mp3",
       "images": [
-        "http://localhost:5000/uploads/1777118386647-Modern promotional banner design for Fargâ€˜ona viloyati Yoshlar ishlari boshqarmasi rasmiy axborot m_1776778989287.png"
+        "/uploads/1777118386647-Modern promotional banner design for Fargâ€˜ona viloyati Yoshlar ishlari boshqarmasi rasmiy axborot m_1776778989287.png"
       ],
       "slidesUrl": "",
       "id": 1777118392121,
@@ -28,7 +28,7 @@
       "month": "Sentyabr",
       "theme": "Oʻzbekiston mening Vatanim",
       "center": "Qurish-yasash va matematika",
-      "fileUrl": "http://localhost:5000/uploads/1777153614177-Modern promotional banner design for Fargâona viloyati Yoshlar ishlari boshqarmasi rasmiy axborot m_1776778989287.png",
+      "fileUrl": "/uploads/1777153614177-Modern promotional banner design for Fargâona viloyati Yoshlar ishlari boshqarmasi rasmiy axborot m_1776778989287.png",
       "time": "26.04.2026, 02:46:54"
     }
   ],
