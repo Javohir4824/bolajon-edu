@@ -250,90 +250,139 @@ export default function SuperAdminPanel() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#e0e7ff', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px' }}>
-      <div style={{ background: 'white', borderRadius: '12px', padding: '40px', width: '100%', maxWidth: '900px', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', position: 'relative' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
+      <div className="glass-card" style={{ width: '100%', maxWidth: '1000px', position: 'relative', marginTop: '20px' }}>
 
         <button
           onClick={() => {
             localStorage.removeItem('superAdminAuth');
             navigate('/');
           }}
-          style={{ position: 'absolute', top: '24px', right: '24px', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: '#fee2e2', color: '#b91c1c', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', border: 'none' }}
+          className="btn"
+          style={{ position: 'absolute', top: '20px', right: '20px', padding: '10px 20px', background: 'var(--danger)', fontSize: '0.9rem', boxShadow: 'none' }}
         >
           Chiqish
         </button>
 
-        <h1 style={{ marginBottom: '32px', color: '#312e81', textAlign: 'center', fontSize: '2.5rem' }}>
-          👑 Bosh Boshqaruv (Super Admin)
+        <h1 style={{ marginBottom: '32px', color: 'var(--secondary)', textAlign: 'center', fontSize: '2.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px' }}>
+          <span style={{ fontSize: '3rem' }}>👑</span> Oliy Boshqaruv
         </h1>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px', marginBottom: '32px', borderBottom: '2px solid #eee', paddingBottom: '16px' }}>
-          <button onClick={() => setActiveTab('upload')} style={{ padding: '12px', borderRadius: '8px', border: 'none', background: activeTab === 'upload' ? '#4f46e5' : 'white', color: activeTab === 'upload' ? 'white' : '#555', fontWeight: 'bold', cursor: 'pointer' }}>📚 Darsliklar</button>
-          <button onClick={() => setActiveTab('teachers')} style={{ padding: '12px', borderRadius: '8px', border: 'none', background: activeTab === 'teachers' ? '#4f46e5' : 'white', color: activeTab === 'teachers' ? 'white' : '#555', fontWeight: 'bold', cursor: 'pointer' }}>👥 Xodimlar Nazorati</button>
-          <button onClick={() => setActiveTab('stats')} style={{ padding: '12px', borderRadius: '8px', border: 'none', background: activeTab === 'stats' ? '#4f46e5' : 'white', color: activeTab === 'stats' ? 'white' : '#555', fontWeight: 'bold', cursor: 'pointer' }}>📊 Global Statistika</button>
-          <button onClick={() => setActiveTab('pupils')} style={{ padding: '12px', borderRadius: '8px', border: 'none', background: activeTab === 'pupils' ? '#4f46e5' : 'white', color: activeTab === 'pupils' ? 'white' : '#555', fontWeight: 'bold', cursor: 'pointer' }}>🧒 Bolajonlar Bazasi</button>
-          <button onClick={() => setActiveTab('dmtts')} style={{ padding: '12px', borderRadius: '8px', border: 'none', background: activeTab === 'dmtts' ? '#4f46e5' : 'white', color: activeTab === 'dmtts' ? 'white' : '#555', fontWeight: 'bold', cursor: 'pointer' }}>🏢 DMTT Boshqaruvi</button>
-          <button onClick={() => setActiveTab('homeworks')} style={{ padding: '12px', borderRadius: '8px', border: 'none', background: activeTab === 'homeworks' ? '#4f46e5' : 'white', color: activeTab === 'homeworks' ? 'white' : '#555', fontWeight: 'bold', cursor: 'pointer' }}>📥 Vazifalar</button>
-          <button onClick={() => setActiveTab('events')} style={{ padding: '12px', borderRadius: '8px', border: 'none', background: activeTab === 'events' ? '#4f46e5' : 'white', color: activeTab === 'events' ? 'white' : '#555', fontWeight: 'bold', cursor: 'pointer' }}>🎉 Bayramlar</button>
+
+        <div className="responsive-tabs" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '32px', justifyContent: 'center' }}>
+          {[
+            { id: 'upload', icon: '📚', label: 'Darsliklar' },
+            { id: 'teachers', icon: '👥', label: 'Xodimlar' },
+            { id: 'stats', icon: '📊', label: 'Reyting' },
+            { id: 'pupils', icon: '🧒', label: 'Bolajonlar' },
+            { id: 'dmtts', icon: '🏢', label: 'Bogʻchalar' },
+            { id: 'homeworks', icon: '📥', label: 'Vazifalar' },
+            { id: 'events', icon: '🎉', label: 'Tadbirlar' }
+          ].map(tab => (
+            <button 
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)} 
+              style={{ 
+                padding: '12px 20px', 
+                borderRadius: '50px', 
+                border: 'none', 
+                background: activeTab === tab.id ? 'var(--secondary)' : 'white', 
+                color: activeTab === tab.id ? 'white' : '#555', 
+                fontWeight: '800', 
+                cursor: 'pointer',
+                boxShadow: activeTab === tab.id ? '0 4px 15px rgba(0,177,255,0.3)' : '0 2px 5px rgba(0,0,0,0.05)',
+                transition: 'all 0.2s'
+              }}
+            >
+              {tab.icon} {tab.label}
+            </button>
+          ))}
         </div>
 
-        {msg && <div style={{ padding: '12px', background: '#dcfce7', color: '#166534', marginBottom: '16px', borderRadius: '8px', fontWeight: 'bold', textAlign: 'center' }}>{msg}</div>}
+        {msg && (
+          <motion.div 
+            initial={{ y: -20, opacity: 0 }} 
+            animate={{ y: 0, opacity: 1 }} 
+            style={{ padding: '15px', background: 'var(--success)', color: 'white', marginBottom: '20px', borderRadius: '15px', fontWeight: 'bold', textAlign: 'center', boxShadow: '0 5px 15px rgba(44,214,82,0.3)' }}
+          >
+            {msg}
+          </motion.div>
+        )}
 
         {/* UPLOAD TAB */}
         {activeTab === 'upload' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <h2 style={{ marginBottom: '20px', color: '#4338ca' }}>📚 Global Darsliklar Yuklash</h2>
-            <div className="responsive-grid-4" style={{ marginBottom: '20px', alignItems: 'flex-end' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Oy</label>
-                <select value={month} onChange={e => setMonth(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <h2 style={{ marginBottom: '25px', color: 'var(--text-dark)', borderLeft: '5px solid var(--primary)', paddingLeft: '15px' }}>📚 Global Darsliklar Yuklash</h2>
+            
+            <div className="responsive-grid-4" style={{ marginBottom: '24px' }}>
+              <div className="form-group">
+                <label>Oy</label>
+                <select value={month} onChange={e => setMonth(e.target.value)}>
                   {mockData.months.map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
                 </select>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Hafta</label>
-                <select value={week} onChange={e => setWeek(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }}>
+              <div className="form-group">
+                <label>Hafta</label>
+                <select value={week} onChange={e => setWeek(e.target.value)}>
                   {['1-hafta', '2-hafta', '3-hafta', '4-hafta'].map(w => <option key={w} value={w}>{w}</option>)}
                 </select>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Guruh</label>
-                <select value={resGroup} onChange={e => setResGroup(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }}>
+              <div className="form-group">
+                <label>Guruh</label>
+                <select value={resGroup} onChange={e => setResGroup(e.target.value)}>
                   {mockData.adminGroups.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Mavzu</label>
-                <input type="text" value={theme} onChange={e => setTheme(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
+              <div className="form-group">
+                <label>Mavzu</label>
+                <input type="text" placeholder="Mavzu nomi..." value={theme} onChange={e => setTheme(e.target.value)} />
               </div>
             </div>
             
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Markaz</label>
-              <select value={center} onChange={e => setCenter(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ddd' }}>
-                <option>Qurish-yasash va matematika</option><option>Syujetli rolli oʻyinlar va dramalash</option><option>Til va nutq</option><option>Fan va tabiat</option><option>Sanʻat markazi</option>
+            <div className="form-group" style={{ marginBottom: '30px' }}>
+              <label>Markaz</label>
+              <select value={center} onChange={e => setCenter(e.target.value)}>
+                <option>Qurish-yasash va matematika</option>
+                <option>Syujetli rolli oʻyinlar va dramalash</option>
+                <option>Til va nutq</option>
+                <option>Fan va tabiat</option>
+                <option>Sanʻat markazi</option>
               </select>
             </div>
 
-            <div className="responsive-grid-4" style={{ marginBottom: '20px' }}>
-               <div className="upload-box" style={{ border: '2px dashed #ddd', padding: '20px', textAlign: 'center', borderRadius: '12px' }}>
+            <div className="responsive-grid-4" style={{ marginBottom: '30px', gap: '15px' }}>
+               <div className="media-uploader" style={{ padding: '20px' }}>
                   <input type="file" onChange={e => handleFileUpload(e, 'video')} style={{ display: 'none' }} id="vid"/>
-                  <label htmlFor="vid" style={{ cursor: 'pointer' }}>🎥 Video {videoUrl ? '✅' : '+'}</label>
+                  <label htmlFor="vid" style={{ cursor: 'pointer', fontSize: '1.2rem' }}>
+                    <div style={{ fontSize: '2rem', marginBottom: '5px' }}>🎥</div>
+                    Video {videoUrl ? '✅' : '+'}
+                  </label>
                </div>
-               <div className="upload-box" style={{ border: '2px dashed #ddd', padding: '20px', textAlign: 'center', borderRadius: '12px' }}>
+               <div className="media-uploader" style={{ padding: '20px' }}>
                   <input type="file" onChange={e => handleFileUpload(e, 'audio')} style={{ display: 'none' }} id="aud"/>
-                  <label htmlFor="aud" style={{ cursor: 'pointer' }}>🎵 Audio {audioUrl ? '✅' : '+'}</label>
+                  <label htmlFor="aud" style={{ cursor: 'pointer', fontSize: '1.2rem' }}>
+                    <div style={{ fontSize: '2rem', marginBottom: '5px' }}>🎵</div>
+                    Audio {audioUrl ? '✅' : '+'}
+                  </label>
                </div>
-               <div className="upload-box" style={{ border: '2px dashed #ddd', padding: '20px', textAlign: 'center', borderRadius: '12px' }}>
+               <div className="media-uploader" style={{ padding: '20px' }}>
                   <input type="file" onChange={e => handleFileUpload(e, 'image')} style={{ display: 'none' }} id="img"/>
-                  <label htmlFor="img" style={{ cursor: 'pointer' }}>🖼️ Rasm {images.length > 0 ? `(${images.length})` : '+'}</label>
+                  <label htmlFor="img" style={{ cursor: 'pointer', fontSize: '1.2rem' }}>
+                    <div style={{ fontSize: '2rem', marginBottom: '5px' }}>🖼️</div>
+                    Rasm {images.length > 0 ? `(${images.length})` : '+'}
+                  </label>
                </div>
-               <div className="upload-box" style={{ border: '2px dashed #ddd', padding: '20px', textAlign: 'center', borderRadius: '12px' }}>
+               <div className="media-uploader" style={{ padding: '20px' }}>
                   <input type="file" onChange={e => handleFileUpload(e, 'slide')} style={{ display: 'none' }} id="pdf"/>
-                  <label htmlFor="pdf" style={{ cursor: 'pointer' }}>📄 PDF {slidesUrl ? '✅' : '+'}</label>
+                  <label htmlFor="pdf" style={{ cursor: 'pointer', fontSize: '1.2rem' }}>
+                    <div style={{ fontSize: '2rem', marginBottom: '5px' }}>📄</div>
+                    PDF {slidesUrl ? '✅' : '+'}
+                  </label>
                </div>
             </div>
 
-            <button onClick={handleSaveResource} style={{ width: '100%', padding: '15px', background: '#4f46e5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem' }}>Materialni Saqlash ✅</button>
+            <button onClick={handleSaveResource} className="btn primary" style={{ width: '100%', padding: '20px' }}>
+              Materialni Saqlash ✅
+            </button>
           </motion.div>
         )}
 
