@@ -310,6 +310,11 @@ export default function SuperAdminPanel() {
           ))}
         </div>
 
+        <div className="glass-card" style={{ marginBottom: '20px', padding: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.5)', borderRadius: '15px' }}>
+           <span style={{ fontWeight: 'bold', color: 'var(--primary)' }}>📊 Bazada hozir: {resources.length} ta dars bor</span>
+           <button onClick={fetchResources} className="btn" style={{ padding: '5px 15px', fontSize: '0.8rem', background: 'var(--secondary)', color: 'white' }}>Yangilash 🔄</button>
+        </div>
+
         {msg && (
           <motion.div 
             initial={{ y: -20, opacity: 0 }} 
