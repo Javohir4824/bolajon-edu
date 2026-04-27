@@ -23,7 +23,8 @@ export default function LessonView() {
   useEffect(() => {
     const fetchResources = async () => {
       try {
-        const res = await fetch('/api/resources');
+        // Cache-busting: add a timestamp to avoid getting old data
+        const res = await fetch(`/api/resources?t=${Date.now()}`);
         const data = await res.json();
 
         const studentGroup = String(user?.location?.group || '').toLowerCase();
@@ -37,12 +38,13 @@ export default function LessonView() {
         };
 
         const targetCategory = getCategory(studentGroup);
-        const clean = (s) => String(s || '').replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+        // Fuzzy clean: remove ALL non-alphanumeric characters for comparison
+        const fuzzy = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
         const filtered = data.filter(r => 
-          r.month === monthData.name && 
-          clean(r.theme) === clean(theme) &&
-          r.group === targetCategory
+          fuzzy(r.month) === fuzzy(monthData.name) && 
+          fuzzy(r.theme) === fuzzy(theme) &&
+          fuzzy(r.group) === fuzzy(targetCategory)
         );
         if (filtered.length > 0) setResources(filtered);
       } catch (e) { console.error('Error fetching resources', e); }

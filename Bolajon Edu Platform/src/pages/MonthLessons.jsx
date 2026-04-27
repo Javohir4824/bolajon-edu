@@ -19,12 +19,11 @@ export default function MonthLessons() {
 
   const fetchResources = async () => {
     try {
-      const res = await fetch('/api/resources');
+      const res = await fetch(`/api/resources?t=${Date.now()}`);
       const all = await res.json();
       
       const studentGroup = String(user?.location?.group || '').toLowerCase();
       
-      // Helper to map specific student group to general admin category
       const getCategory = (g) => {
         if (g.includes('kichik')) return 'Kichik';
         if (g.includes('oʻrta') || g.includes('orta')) return 'Oʻrta';
@@ -34,11 +33,11 @@ export default function MonthLessons() {
       };
 
       const targetCategory = getCategory(studentGroup);
+      const fuzzy = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
-      // Filter for this month and student's group category
       const filtered = all.filter(r => 
-        r.month.toLowerCase() === id.toLowerCase() && 
-        r.group === targetCategory
+        fuzzy(r.month) === fuzzy(id) && 
+        fuzzy(r.group) === fuzzy(targetCategory)
       );
       setAdminResources(filtered);
     } catch (e) { console.error(e); }
